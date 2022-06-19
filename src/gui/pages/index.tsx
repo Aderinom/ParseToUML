@@ -1,5 +1,5 @@
-import { AppShell, Button, Container, Group, Header, Input, Navbar, Paper, Space, Textarea, Title } from '@mantine/core';
-import { Parser } from 'controller/Parser';
+import { Button, Container, Paper, Space, Textarea, Title } from '@mantine/core';
+import { Parser } from 'controller/Parser/Parser';
 import React, { useRef, useState } from 'react';
 
 export default function LandingPage(): any {
@@ -13,7 +13,8 @@ export default function LandingPage(): any {
         if (textArea.current?.value) {
             try {
                 const result = await parser.parse(textArea.current.value);
-                setText(result);
+                console.log(result);
+                setText(JSON.stringify(result, undefined, 4));
             } catch (error: any) {
                 setText('' + error);
             }
