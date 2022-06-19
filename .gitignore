@@ -3,3 +3,5 @@ node_modules/
 public
 .history
 coverage
+.dccache
+.embold
