@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 // Generated automatically by nearley, version 2.20.1
 // http://github.com/Hardmath123/nearley
 (function () {
@@ -26,8 +25,10 @@ function id(x) { return x[0]; }
 var grammar = {
     Lexer: lexer,
     ParserRules: [
-    {"name": "MAIN", "symbols": ["class"]},
-    {"name": "class", "symbols": ["class_header", "_", "lparen", "_", "class_specification", "rparen"], "postprocess": function([header,,,,specification,]) {return {type:"class", header: header, specification: specification};}},
+    {"name": "MAIN$ebnf$1", "symbols": []},
+    {"name": "MAIN$ebnf$1", "symbols": ["MAIN$ebnf$1", "class"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "MAIN", "symbols": ["MAIN$ebnf$1", "_"], "postprocess": function([cls,]) {return cls}},
+    {"name": "class", "symbols": ["_", "class_header", "_", "lparen", "_", "class_specification", "rparen"], "postprocess": function([,header,,,,specification,]) {return {type:"class", header: header, specification: specification};}},
     {"name": "class_header", "symbols": [(lexer.has("class_specifier") ? {type: "class_specifier"} : class_specifier), "__", (lexer.has("literal") ? {type: "literal"} : literal), "class_extention_specializer"], "postprocess": function([,,name,extentions]) {return {type:"class_header", name: name.value, extends: extentions};}},
     {"name": "class_extention_specializer", "symbols": ["__", (lexer.has("extend_keyword") ? {type: "extend_keyword"} : extend_keyword), "class_extention_definition"], "postprocess": function([ws,kw,definitions]) {return [...definitions]}},
     {"name": "class_extention_specializer", "symbols": [], "postprocess": function() {return []}},

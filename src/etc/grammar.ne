@@ -23,12 +23,12 @@
 # Pass your lexer with @lexer:
 @lexer lexer
 
-MAIN -> class
+MAIN -> class:* _ {% function([cls,]) {return cls} %}
 
 # class header { members }
 class -> 
-	class_header _ lparen _ class_specification rparen 
-		{% function([header,,,,specification,]) {return {type:"class", header: header, specification: specification};} %}
+	_ class_header _ lparen _ class_specification rparen 
+		{% function([,header,,,,specification,]) {return {type:"class", header: header, specification: specification};} %}
 			
 # "class" _ "name" _ (extends? private? name?)
 class_header -> 

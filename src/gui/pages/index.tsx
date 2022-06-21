@@ -1,10 +1,12 @@
 import { Button, Container, Paper, Space, Textarea, Title } from '@mantine/core';
 import { Parser } from 'controller/Parser/Parser';
+import { UMLGenerator } from 'controller/UML/UMLGenerator';
 import React, { useRef, useState } from 'react';
 
 export default function LandingPage(): any {
     const textArea = useRef<HTMLTextAreaElement>(null);
     const [text, setText] = useState<false | string>(false);
+    const [svg, setSVG] = useState<string | false>(false);
     const [working, setWorking] = useState<boolean>(false);
     const parser = new Parser();
 
@@ -14,6 +16,9 @@ export default function LandingPage(): any {
             try {
                 const result = await parser.parse(textArea.current.value);
                 console.log(result);
+                const gen = new UMLGenerator();
+                const res2 = await gen.generate(result);
+                setSVG(res2);
                 setText(JSON.stringify(result, undefined, 4));
             } catch (error: any) {
                 setText('' + error);
@@ -32,6 +37,8 @@ export default function LandingPage(): any {
                 <Button fullWidth variant="outline" compact loading={working} onClick={onButtonClick}>
                     Parse!
                 </Button>
+                <Space h="md" />
+                {svg ? <div dangerouslySetInnerHTML={{ __html: svg }}></div> : ''}
                 <Space h="md" />
                 <Textarea
                     disabled

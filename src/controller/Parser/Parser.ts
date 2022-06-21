@@ -5,6 +5,6 @@ export class Parser {
     public async parse(text: string) {
         const parser = new nearley.Parser(grammar);
         parser.feed(text);
-        return parser.results;
+        return parser.results[0];
     }
 }

@@ -1,0 +1,46 @@
+class name {}
+class name 
+{
+
+}
+
+class name
+{ a b;
+}
+
+class name{
+private:
+ test test;
+public:
+ test test;
+protected:
+ test test;
+}
+
+class a extends name {
+private:
+ test test;
+public:
+ test test;
+protected:
+ test test;
+}
+
+class name extends private a public b protected c d {
+private:
+ test test;
+public:
+ test test;
+protected:
+ test test;
+}
+
+class name
+{ 
+ test test();
+}
+
+class name {
+ test &test[4];
+ test test;
+}

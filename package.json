@@ -25,7 +25,8 @@
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"src/**/*.tsx\" \"test/**/*.tsx\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx}\" --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx}\" --fix",
+    "parse-grammar": "nearleyc ./src/etc/grammar.ne -o ./src/controller/Parser/grammar.js"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -34,6 +35,7 @@
     "@mantine/hooks": "^4.1.4",
     "@types/moo": "^0.5.5",
     "@types/nearley": "^2.11.2",
+    "@types/viz.js": "^2.1.2",
     "gatsby": "^4.11.2",
     "gatsby-plugin-image": "^2.11.1",
     "gatsby-plugin-manifest": "^4.11.1",
@@ -50,7 +52,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
-    "tabler-icons-react": "^1.46.0"
+    "tabler-icons-react": "^1.46.0",
+    "viz.js": "^2.1.2"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
