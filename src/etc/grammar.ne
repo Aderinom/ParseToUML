@@ -3,7 +3,7 @@
 	const lexer = moo.compile({
 	  ws:    { match: /[ \t\n\v\f]+/, lineBreaks: true },
 	  ownership_modifier: ['*','&'],
-	  count_modifier: /\[\d+\]/,
+	  count_modifier: /\[\d*\]/,
 	  class_specifier: ['class'],
 	  access_specifier: ['private','protected','public'],
 	  extend_keyword:['extends'],
@@ -85,12 +85,12 @@ inside_class_declaration ->
 member_declaration -> 
 	%literal ownership_modifier %literal count_modifier %semi 
 		{% 
-			function([type, owner_modifier, name, count_modifier, s]){
+			function([type, owner_modifier, name, count_modifier, s]){				
 				return {type:"member", 
 						member_type:type.value, 
 						member_name:name.value, 
 						owner_modifier: owner_modifier, 
-						count_modifier: count_modifier 
+						count_modifier: count_modifier
 			   }
 			}
 		%}
@@ -104,19 +104,31 @@ method_declaration ->
 # First function parameter, doesn't require a comma
 function_parameters ->
 	# type
-	%literal __ %literal _ 
+	function_parameter 
 		{% function([type,ws1,name,ws2]) {return [{type:type.value, name:name.value}]} %}
 	# private <name> $end
-	| %literal __ %literal _ function_parameter_ 
+	| %function_parameter function_parameter_ 
 		{% function([type,ws1,name,ws2, recurse]) {return [{type:type.value, name:name.value}, ...recurse]} %}
 	| null
 	
 # Following function parameters, require a comma
-function_parameter_ -> %com _ %literal __ %literal _
+function_parameter_ -> %com _ function_parameter
 		{% function([c,w,type,w1,name,w2]) {return [{type:type.value, name:name.value}]} %}
-	| %com _ %literal __ %literal _ function_parameter_
+	| %com _ function_parameter function_parameter_
 		{% function([c,w,type,w1,name,w2,recurse]) {return [{type:type.value, name:name.value}, ...recurse]} %}
 
+function_parameter -> 
+	%literal ownership_modifier %literal count_modifier 
+		{% 
+			function([type, owner_modifier, name, count_modifier, s]){				
+				return {type:"param", 
+						member_type:type.value, 
+						member_name:name.value, 
+						owner_modifier: owner_modifier, 
+						count_modifier: count_modifier
+			   }
+			}
+		%}
 
 ownership_modifier -> 
 	_ %ownership_modifier __
@@ -128,7 +140,7 @@ ownership_modifier ->
 	
 count_modifier -> 
 	_ %count_modifier _ 
-		{% function([w,count,w1]) {return count.value;} %}
+		{% function([w,count,w1]) {return count.value.match(/\[(\d*)\]/)[1]} %}
 	| _
 		{% function([w]) {return undefined;} %}
 

@@ -7,7 +7,7 @@ interface Member {
     type: 'member';
     member_type: string;
     member_name: string;
-    owner_modifer: '&' | '*' | undefined;
+    owner_modifier: '&' | '*' | undefined;
     count_modifier: string;
 }
 

@@ -7,7 +7,7 @@ function id(x) { return x[0]; }
 	const lexer = moo.compile({
 	  ws:    { match: /[ \t\n\v\f]+/, lineBreaks: true },
 	  ownership_modifier: ['*','&'],
-	  count_modifier: /\[\d+\]/,
+	  count_modifier: /\[\d*\]/,
 	  class_specifier: ['class'],
 	  access_specifier: ['private','protected','public'],
 	  extend_keyword:['extends'],
@@ -42,27 +42,37 @@ var grammar = {
     {"name": "inside_class_declaration", "symbols": ["member_declaration"], "postprocess": function([member]){return member}},
     {"name": "inside_class_declaration", "symbols": ["method_declaration"], "postprocess": function([method]){return method}},
     {"name": "member_declaration", "symbols": [(lexer.has("literal") ? {type: "literal"} : literal), "ownership_modifier", (lexer.has("literal") ? {type: "literal"} : literal), "count_modifier", (lexer.has("semi") ? {type: "semi"} : semi)], "postprocess":  
-        function([type, owner_modifier, name, count_modifier, s]){
+        function([type, owner_modifier, name, count_modifier, s]){				
         	return {type:"member", 
         			member_type:type.value, 
         			member_name:name.value, 
         			owner_modifier: owner_modifier, 
-        			count_modifier: count_modifier 
+        			count_modifier: count_modifier
            }
         }
         		},
     {"name": "method_declaration", "symbols": [(lexer.has("literal") ? {type: "literal"} : literal), "__", (lexer.has("literal") ? {type: "literal"} : literal), "_", (lexer.has("lbrack") ? {type: "lbrack"} : lbrack), "_", "function_parameters", (lexer.has("rbrack") ? {type: "rbrack"} : rbrack), "_", (lexer.has("semi") ? {type: "semi"} : semi)], "postprocess":  function([return_type,ws0, name, ws1, b, ws2, parameters ,b2,]){
         	return {type:"method", return_type:return_type.value, method_name:name.value, parameters: parameters }
         }},
-    {"name": "function_parameters", "symbols": [(lexer.has("literal") ? {type: "literal"} : literal), "__", (lexer.has("literal") ? {type: "literal"} : literal), "_"], "postprocess": function([type,ws1,name,ws2]) {return [{type:type.value, name:name.value}]}},
-    {"name": "function_parameters", "symbols": [(lexer.has("literal") ? {type: "literal"} : literal), "__", (lexer.has("literal") ? {type: "literal"} : literal), "_", "function_parameter_"], "postprocess": function([type,ws1,name,ws2, recurse]) {return [{type:type.value, name:name.value}, ...recurse]}},
+    {"name": "function_parameters", "symbols": ["function_parameter"], "postprocess": function([type,ws1,name,ws2]) {return [{type:type.value, name:name.value}]}},
+    {"name": "function_parameters", "symbols": [(lexer.has("function_parameter") ? {type: "function_parameter"} : function_parameter), "function_parameter_"], "postprocess": function([type,ws1,name,ws2, recurse]) {return [{type:type.value, name:name.value}, ...recurse]}},
     {"name": "function_parameters", "symbols": []},
-    {"name": "function_parameter_", "symbols": [(lexer.has("com") ? {type: "com"} : com), "_", (lexer.has("literal") ? {type: "literal"} : literal), "__", (lexer.has("literal") ? {type: "literal"} : literal), "_"], "postprocess": function([c,w,type,w1,name,w2]) {return [{type:type.value, name:name.value}]}},
-    {"name": "function_parameter_", "symbols": [(lexer.has("com") ? {type: "com"} : com), "_", (lexer.has("literal") ? {type: "literal"} : literal), "__", (lexer.has("literal") ? {type: "literal"} : literal), "_", "function_parameter_"], "postprocess": function([c,w,type,w1,name,w2,recurse]) {return [{type:type.value, name:name.value}, ...recurse]}},
+    {"name": "function_parameter_", "symbols": [(lexer.has("com") ? {type: "com"} : com), "_", "function_parameter"], "postprocess": function([c,w,type,w1,name,w2]) {return [{type:type.value, name:name.value}]}},
+    {"name": "function_parameter_", "symbols": [(lexer.has("com") ? {type: "com"} : com), "_", "function_parameter", "function_parameter_"], "postprocess": function([c,w,type,w1,name,w2,recurse]) {return [{type:type.value, name:name.value}, ...recurse]}},
+    {"name": "function_parameter", "symbols": [(lexer.has("literal") ? {type: "literal"} : literal), "ownership_modifier", (lexer.has("literal") ? {type: "literal"} : literal), "count_modifier"], "postprocess":  
+        function([type, owner_modifier, name, count_modifier, s]){				
+        	return {type:"param", 
+        			member_type:type.value, 
+        			member_name:name.value, 
+        			owner_modifier: owner_modifier, 
+        			count_modifier: count_modifier
+           }
+        }
+        		},
     {"name": "ownership_modifier", "symbols": ["_", (lexer.has("ownership_modifier") ? {type: "ownership_modifier"} : ownership_modifier), "__"], "postprocess": function([w,owner,w1]) {return owner.value}},
     {"name": "ownership_modifier", "symbols": ["__", (lexer.has("ownership_modifier") ? {type: "ownership_modifier"} : ownership_modifier)], "postprocess": function([w,owner,w1]) {return owner.value}},
     {"name": "ownership_modifier", "symbols": ["_"], "postprocess": function([w]) {return undefined;}},
-    {"name": "count_modifier", "symbols": ["_", (lexer.has("count_modifier") ? {type: "count_modifier"} : count_modifier), "_"], "postprocess": function([w,count,w1]) {return count.value;}},
+    {"name": "count_modifier", "symbols": ["_", (lexer.has("count_modifier") ? {type: "count_modifier"} : count_modifier), "_"], "postprocess": function([w,count,w1]) {return count.value.match(/\[(\d*)\]/)[1]}},
     {"name": "count_modifier", "symbols": ["_"], "postprocess": function([w]) {return undefined;}},
     {"name": "access_specifier", "symbols": [(lexer.has("access_specifier") ? {type: "access_specifier"} : access_specifier)], "postprocess": function([spec]) {return {type:"access_specifier", value:spec.value}}},
     {"name": "_$ebnf$1", "symbols": []},

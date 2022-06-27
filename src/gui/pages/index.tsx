@@ -1,4 +1,5 @@
 import { Button, Container, Paper, Space, Textarea, Title } from '@mantine/core';
+import { LogicParser } from 'controller/Parser/LogicParser';
 import { Parser } from 'controller/Parser/Parser';
 import { UMLGenerator } from 'controller/UML/UMLGenerator';
 import React, { useRef, useState } from 'react';
@@ -9,17 +10,21 @@ export default function LandingPage(): any {
     const [svg, setSVG] = useState<string | false>(false);
     const [working, setWorking] = useState<boolean>(false);
     const parser = new Parser();
+    const logParse = new LogicParser();
+    const gen = new UMLGenerator();
 
     const onButtonClick = async (ev: React.MouseEvent) => {
         setWorking(true);
         if (textArea.current?.value) {
             try {
-                const result = await parser.parse(textArea.current.value);
-                console.log(result);
-                const gen = new UMLGenerator();
-                const res2 = await gen.generate(result);
-                setSVG(res2);
-                setText(JSON.stringify(result, undefined, 4));
+                const parserResult = await parser.parse(textArea.current.value);
+                console.log(parserResult);
+                const logicResult = logParse.parse(parserResult);
+                console.log(logicResult);
+                const umlResult = await gen.generate(logicResult);
+
+                setSVG(umlResult);
+                setText(JSON.stringify(logicResult, undefined, 4));
             } catch (error: any) {
                 setText('' + error);
             }
