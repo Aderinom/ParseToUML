@@ -6,8 +6,8 @@
 	  count_modifier: /\[\d*\]/,
 	  class_specifier: ['class'],
 	  access_specifier: ['private','protected','public'],
-	  extend_keyword:['extends'],
-	  literal: /[a-zA-Z]+/,
+	  extend_keyword:['extends',':'],
+	  literal: /[a-zA-Z0-9_\-:]*[a-zA-Z0-9_\-]/,
 	  lbrack: "(",
 	  rbrack: ")",
 	  lparent: "{",
@@ -38,7 +38,7 @@ class_header ->
 # makes the class extension optional
 class_extention_specializer ->  
 	# extends (private a ...)
-	__ %extend_keyword class_extention_definition  
+	_ %extend_keyword class_extention_definition  
 		{% function([ws,kw,definitions]) {return [...definitions]} %}
 	# not extending
 	| null 
@@ -54,12 +54,12 @@ class_extention_definition ->
 		{% function([ws0,name,ws1]) {return [{access: "default", name:name.value}]} %} 
 		
 	# private <name> $recurse
-	| __ access_specifier __ %literal _ class_extention_definition 
-		{% function([ws0,access_spec,ws1,name, ws, recurse]) {return [{access: access_spec, name:name.value}, ...recurse]} %}
+	| __ access_specifier __ %literal _ %com:* _ class_extention_definition 
+		{% function([ws0,access_spec,ws1,name,ws2,com,ws3,recurse]) {return [{access: access_spec, name:name.value}, ...recurse]} %}
 
 	# private <name> $recurse
-	| __ %literal _ class_extention_definition
-		{% function([ws0,name,ws1, recurse]) {return [{access: "default", name:name.value},...recurse]} %}
+	| __ %literal _ %com:* _ class_extention_definition
+		{% function([ws0,name,ws1,com,ws2, recurse]) {return [{access: "default", name:name.value},...recurse]} %}
 							
 
 class_specification -> 
@@ -85,12 +85,12 @@ inside_class_declaration ->
 member_declaration -> 
 	%literal ownership_modifier %literal count_modifier %semi 
 		{% 
-			function([type, owner_modifier, name, count_modifier, s]){				
+			function([type, owner_modifier, name, count_modifier, s]){
 				return {type:"member", 
 						member_type:type.value, 
 						member_name:name.value, 
 						owner_modifier: owner_modifier, 
-						count_modifier: count_modifier
+						count_modifier: count_modifier 
 			   }
 			}
 		%}
@@ -104,31 +104,19 @@ method_declaration ->
 # First function parameter, doesn't require a comma
 function_parameters ->
 	# type
-	function_parameter 
+	%literal __ %literal _ 
 		{% function([type,ws1,name,ws2]) {return [{type:type.value, name:name.value}]} %}
 	# private <name> $end
-	| %function_parameter function_parameter_ 
+	| %literal __ %literal _ function_parameter_ 
 		{% function([type,ws1,name,ws2, recurse]) {return [{type:type.value, name:name.value}, ...recurse]} %}
 	| null
 	
 # Following function parameters, require a comma
-function_parameter_ -> %com _ function_parameter
+function_parameter_ -> %com _ %literal __ %literal _
 		{% function([c,w,type,w1,name,w2]) {return [{type:type.value, name:name.value}]} %}
-	| %com _ function_parameter function_parameter_
+	| %com _ %literal __ %literal _ function_parameter_
 		{% function([c,w,type,w1,name,w2,recurse]) {return [{type:type.value, name:name.value}, ...recurse]} %}
 
-function_parameter -> 
-	%literal ownership_modifier %literal count_modifier 
-		{% 
-			function([type, owner_modifier, name, count_modifier, s]){				
-				return {type:"param", 
-						member_type:type.value, 
-						member_name:name.value, 
-						owner_modifier: owner_modifier, 
-						count_modifier: count_modifier
-			   }
-			}
-		%}
 
 ownership_modifier -> 
 	_ %ownership_modifier __

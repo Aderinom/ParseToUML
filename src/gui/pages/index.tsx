@@ -2,7 +2,13 @@ import { Button, Container, Paper, Space, Textarea, Title } from '@mantine/core'
 import { LogicParser } from 'controller/Parser/LogicParser';
 import { Parser } from 'controller/Parser/Parser';
 import { UMLGenerator } from 'controller/UML/UMLGenerator';
+import { default_text } from 'gui/etc/default_text';
 import React, { useRef, useState } from 'react';
+
+// TODO : add Comments to explain relationships. f.e. test & a; // Pushes data to;
+// TODO : add way to add text and explain objects
+// TODO : add alternative generator which generates multiple objects if they could be connected;
+//
 
 export default function LandingPage(): any {
     const textArea = useRef<HTMLTextAreaElement>(null);
@@ -37,7 +43,14 @@ export default function LandingPage(): any {
             <Space h="xl" />
             <Paper shadow="sm" radius="md" p="xl">
                 <Title>ParseToUML</Title>
-                <Textarea placeholder="TextToParse" autosize variant="default" label="TextToParse" ref={textArea} />
+                <Textarea
+                    placeholder="TextToParse"
+                    autosize
+                    variant="default"
+                    label="TextToParse"
+                    ref={textArea}
+                    defaultValue={default_text}
+                />
                 <Space h="md" />
                 <Button fullWidth variant="outline" compact loading={working} onClick={onButtonClick}>
                     Parse!

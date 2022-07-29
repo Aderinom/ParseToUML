@@ -19,6 +19,12 @@ export class UMLGenerator {
             result += this.generateClass(element);
         }
 
+        for (const key in from) {
+            if (!Object.prototype.hasOwnProperty.call(from, key)) continue;
+            const element = from[key];
+            result += this.generateLinks(from, element);
+        }
+
         result += '}';
         console.log(result);
         return GraphGenerator.test(result);
@@ -32,6 +38,10 @@ export class UMLGenerator {
             public: '+',
         };
 
+        function esc(str: string) {
+            return str.replaceAll('&', '&amp;');
+        }
+
         let members = '';
         let methods = '';
         let currentAccess: string;
@@ -44,7 +54,7 @@ export class UMLGenerator {
             }
 
             currentAccess = translate[mem.access];
-            members += `<tr><td align="left">${currentAccess} ${mbr.member_type} ${mbr.owner_modifier ?? ''} ${
+            members += `<tr><td align="left">${currentAccess} ${mbr.member_type} ${esc(mbr.owner_modifier ?? '')}${
                 mbr.member_name
             }${cm}</td></tr>\n`;
         });
@@ -72,7 +82,7 @@ export class UMLGenerator {
 
     private generateClass(cls: FullClassDefinition) {
         return `
-        ${cls.name} [
+        "${cls.name}" [
             shape=plain
             label=<
                 <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
@@ -80,5 +90,37 @@ export class UMLGenerator {
                     ${this.processSpecifiers(cls)}
             </table>>
         ]`;
+    }
+
+    private generateLinks(classes: Record<string, FullClassDefinition>, cls: FullClassDefinition) {
+        let ret = '';
+        function generateInheritance(base: string, derived: string) {
+            return `edge [dir=back arrowtail=odiamond style=""]
+            "${base}" -> "${derived}" `;
+        }
+        function generateOwnership(owner: string, owned: string) {
+            return `edge [dir=frpnt arrowhead=empty]
+            "${owner}" -> "${owned}"  [label=owns]`;
+        }
+        function generateUsage(user: string, used: string) {
+            return `edge [dir=front arrowhead=normal]
+            "${user}" -> "${used}"  [label=uses] `;
+        }
+
+        cls.baseClasses.forEach((base) => {
+            ret += generateInheritance(base.ref.name, cls.name);
+        });
+
+        cls.members.forEach((mem) => {
+            const ref = classes[mem.member.member_type];
+            if (ref === undefined) return;
+            if (mem.member.owner_modifier == undefined) {
+                ret += generateOwnership(cls.name, ref.name);
+            } else {
+                ret += generateUsage(cls.name, ref.name);
+            }
+        });
+
+        return ret;
     }
 }
