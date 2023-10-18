@@ -13,6 +13,7 @@ import React, { useRef, useState } from "react";
 import { LogicParser } from "../utility/Parser/LogicParser";
 import { Parser } from "../utility/Parser/Parser";
 import { UMLGenerator } from "../utility/UMLGenerator";
+import { useDebounceCallback } from "@mantine/hooks";
 
 // TODO : add Comments to explain relationships. f.e. test & a; // Pushes data to;
 // TODO : add way to add text and explain objects
@@ -66,12 +67,10 @@ export default function ParserPage(): any {
   const [working, setWorking] = useState<boolean>(false);
   const imgDiv = useRef<HTMLDivElement>(null);
 
-  const onButtonClick = async (ev: React.MouseEvent) => {
+  const updateSvg = async () => {
     const parser = new Parser();
     const logParse = new LogicParser();
     const gen = new UMLGenerator();
-
-    setWorking(true);
     if (textArea.current?.value) {
       try {
         const parserResult = await parser.parse(textArea.current.value);
@@ -86,8 +85,9 @@ export default function ParserPage(): any {
         setText("" + error);
       }
     }
-    setWorking(false);
   };
+
+  const debounceChange = useDebounceCallback(() => updateSvg(), 100);
 
   return (
     <Container size={"xl"}>
@@ -102,22 +102,15 @@ export default function ParserPage(): any {
             ref={textArea}
             defaultValue={default_text}
             autosize
+            onChange={(e) => {
+              debounceChange();
+            }}
             w={"600px"}
           />
           <Stack>
-            <Stack />
             <div ref={imgDiv}></div>
           </Stack>
         </Group>
-        <Space h="md" />
-        <Button
-          fullWidth
-          variant="outline"
-          loading={working}
-          onClick={onButtonClick}
-        >
-          Parse!
-        </Button>
         <Space h="md" />
         <Textarea
           disabled
@@ -126,7 +119,6 @@ export default function ParserPage(): any {
           variant={text ? "default" : "filled"}
           label="Output"
           value={text ? text : ""}
-          w={"600px"}
         />
       </Paper>
       <Space h="xl" />
