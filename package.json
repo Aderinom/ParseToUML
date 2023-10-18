@@ -1,72 +1,43 @@
 {
-  "name": "hei-you",
-  "version": "1.0.0",
+  "name": "ParseToUml",
   "private": true,
-  "description": "hei-you",
-  "author": "Aaron Kelbsch",
-  "keywords": [
-    "gatsby"
-  ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "prettier --write"
-    ]
-  },
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "develop": "gatsby develop",
-    "start": "gatsby develop",
-    "build": "gatsby build",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean",
-    "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"src/**/*.tsx\" \"test/**/*.tsx\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx}\" --fix",
-    "parse-grammar": "nearleyc ./src/etc/grammar.ne -o ./src/controller/Parser/grammar.js"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "compileGrammar":"nearleyc ./etc/grammar.ne -o ./gen/grammar.js"
+
   },
   "dependencies": {
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mantine/core": "^4.1.4",
-    "@mantine/hooks": "^4.1.4",
-    "@types/moo": "^0.5.5",
-    "@types/nearley": "^2.11.2",
-    "@types/viz.js": "^2.1.2",
-    "gatsby": "^4.11.2",
-    "gatsby-plugin-image": "^2.11.1",
-    "gatsby-plugin-manifest": "^4.11.1",
-    "gatsby-plugin-mantine": "^4.0.0",
-    "gatsby-plugin-react-helmet": "^5.11.0",
-    "gatsby-plugin-react-svg": "^3.1.0",
-    "gatsby-plugin-resolve-src": "^2.1.0",
-    "gatsby-plugin-sharp": "^4.11.1",
-    "gatsby-plugin-sitemap": "^5.11.1",
-    "gatsby-source-filesystem": "^4.11.1",
-    "gatsby-transformer-sharp": "^4.11.0",
-    "moo": "^0.5.1",
+    "@mantine/core": "^7.1.3",
+    "@mantine/dates": "^7.1.3",
+    "@mantine/hooks": "^7.1.3",
+    "@mantine/notifications": "^7.1.3",
+    "@viz-js/viz": "^3.1.0",
+    "moo": "^0.5.2",
     "nearley": "^2.20.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-helmet": "^6.1.0",
-    "tabler-icons-react": "^1.46.0",
-    "viz.js": "^2.1.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0",
+    "vite-plugin-svgr": "^4.1.0",
+    "vite-tsconfig-paths": "^4.2.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.23",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.1",
-    "husky": "^7.0.4",
-    "lint-staged": "^12.3.7",
-    "prettier": "^2.4.1",
-    "typescript": "^4.6.3"
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.31",
+    "postcss-preset-mantine": "^1.8.0",
+    "postcss-simple-vars": "^7.0.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
   }
 }

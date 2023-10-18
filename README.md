@@ -1,9 +1,11 @@
+# UML (like) Generator
 
-Small Project I did for fun.
-Parses a text with class definitions to a diagram showing relationships etc.
+Small tool that generates a UML like graph from C++ like class declarations.
+Mostly created this since I wanted to play with 'nearly'.
 
-## 🚀 Quick start
-    ```shell
-    npm run develop
-    ```
+# Starting
 
+```
+pnpm i 
+pnpm dev
+```
