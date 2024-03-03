@@ -1,5 +1,4 @@
 import {
-  Button,
   Container,
   Group,
   Paper,
@@ -9,8 +8,8 @@ import {
   Title,
 } from "@mantine/core";
 
-import React, { useRef, useState } from "react";
-import { LogicParser } from "../utility/Parser/LogicParser";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FullClassDefinition, LogicParser } from "../utility/Parser/LogicParser";
 import { Parser } from "../utility/Parser/Parser";
 import { UMLGenerator } from "../utility/UMLGenerator";
 import { useDebounceCallback } from "@mantine/hooks";
@@ -60,17 +59,16 @@ class send_queue extends send_queue_i
   uint8 buffer[1024];
 }`;
 
+const parser = new Parser();
+const logParse = new LogicParser();
+const gen = new UMLGenerator();
+
 export default function ParserPage(): any {
   const textArea = useRef<HTMLTextAreaElement>(null);
   const [text, setText] = useState<false | string>(false);
-  const [svg, setSVG] = useState<String | false>(false);
-  const [working, setWorking] = useState<boolean>(false);
   const imgDiv = useRef<HTMLDivElement>(null);
 
   const updateSvg = async () => {
-    const parser = new Parser();
-    const logParse = new LogicParser();
-    const gen = new UMLGenerator();
     if (textArea.current?.value) {
       try {
         const parserResult = await parser.parse(textArea.current.value);
@@ -80,14 +78,27 @@ export default function ParserPage(): any {
         const svgResult = await gen.generate(logicResult);
         imgDiv.current?.replaceChildren(svgResult);
         console.log(svgResult);
-        setText(JSON.stringify(logicResult, undefined, 4));
+        setText(JSON.stringify(logicResult, ((key, val)=>{
+          // Fix issues with circular dependencies
+          if(key === "ref") {
+            const isRef : FullClassDefinition | Object = val;
+            if("name" in isRef){
+              return `[${isRef.name}]`
+            }
+            return "[ref: ?]"
+          }
+          return val
+        }), 4));
       } catch (error: any) {
+        console.error(error)
         setText("" + error);
       }
     }
   };
 
-  const debounceChange = useDebounceCallback(() => updateSvg(), 100);
+  const debounceChange = useDebounceCallback(() => void updateSvg(), 100);
+
+  useEffect(()=>{void updateSvg()},[])
 
   return (
     <Container size={"xl"}>
@@ -114,7 +125,7 @@ export default function ParserPage(): any {
         <Space h="md" />
         <Textarea
           disabled
-          placeholder="Output"
+          placeholder="Parser Output"
           autosize
           variant={text ? "default" : "filled"}
           label="Output"
