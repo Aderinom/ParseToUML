@@ -16,6 +16,7 @@ jobs:
 
       - name: Setup Node
         uses: actions/setup-node@v3
+
       - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
@@ -58,10 +59,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: production-files
-          path: ./dist
+          path: .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: .
