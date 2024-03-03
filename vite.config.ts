@@ -4,7 +4,7 @@ import svgr from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 
-const repo : string | undefined= process.env["GITHUB_REPOSITORY"]?.split("/")[0]; // owner/repo
+const repo : string | undefined= process.env["GITHUB_REPOSITORY"]?.split("/")[1]; // owner/repo
 
 
 // https://vitejs.dev/config/
