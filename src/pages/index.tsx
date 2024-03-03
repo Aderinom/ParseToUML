@@ -75,7 +75,8 @@ export default function ParserPage(): any {
         console.log(parserResult);
         const logicResult = logParse.parse(parserResult);
         console.log(logicResult);
-        const svgResult = await gen.generate(logicResult);
+        const svgResult: HTMLDivElement = await gen.generate(logicResult);
+        svgResult.style.minWidth = "600px"
         imgDiv.current?.replaceChildren(svgResult);
         console.log(svgResult);
         setText(JSON.stringify(logicResult, ((key, val)=>{
@@ -93,6 +94,9 @@ export default function ParserPage(): any {
         console.error(error)
         setText("" + error);
       }
+    }else {
+      imgDiv.current?.replaceChildren()
+      setText("");
     }
   };
 
@@ -112,14 +116,13 @@ export default function ParserPage(): any {
             label="TextToParse"
             ref={textArea}
             defaultValue={default_text}
+            spellCheck={false}
             autosize
-            onChange={(e) => {
-              debounceChange();
-            }}
+            onChange={(e) => void debounceChange()}
             w={"600px"}
           />
           <Stack>
-            <div ref={imgDiv}></div>
+            <div style={{filter:"invert(0.9) sepia(60%) hue-rotate(180deg)"}} ref={imgDiv}></div>
           </Stack>
         </Group>
         <Space h="md" />
